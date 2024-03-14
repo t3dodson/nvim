@@ -55,3 +55,12 @@ vim.api.nvim_set_keymap('n', '<leader>l', '<C-w>l', { noremap = true })
 vim.api.nvim_set_keymap('n', '<leader>k', '<C-w>k', { noremap = true })
 
 vim.api.nvim_set_keymap('n', '<leader>e', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+
+-- telescope
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+-- TODO install ripgrep
+-- vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+

@@ -2,21 +2,17 @@ return {
     'nvimdev/dashboard-nvim',
     event = 'VimEnter',
     config = function()
-        local dashboard_custom_header = {
-            ' ███╗   ██╗ ███████╗ ██████╗  ██╗   ██╗ ██╗ ███╗   ███╗',
-            ' ████╗  ██║ ██╔════╝██╔═══██╗ ██║   ██║ ██║ ████╗ ████║',
-            ' ██╔██╗ ██║ █████╗  ██║   ██║ ██║   ██║ ██║ ██╔████╔██║',
-            ' ██║╚██╗██║ ██╔══╝  ██║   ██║ ╚██╗ ██╔╝ ██║ ██║╚██╔╝██║',
-            ' ██║ ╚████║ ███████╗╚██████╔╝  ╚████╔╝  ██║ ██║ ╚═╝ ██║',
-            ' ╚═╝  ╚═══╝ ╚══════╝ ╚═════╝    ╚═══╝   ╚═╝ ╚═╝     ╚═╝',
-        }
-
-        require('dashboard').setup {
+        require('dashboard').setup({
             config = {
-                header = dashboard_custom_header,
             },
-            theme = 'doom',
-        }
+            theme = 'hyper',
+            disable_move = true,
+            hide = {
+                statusline = true,
+                tabline = true,
+                winbar = true,
+            },
+        })
     end,
     dependencies = {{ 'nvim-tree/nvim-web-devicons' }}
 }
