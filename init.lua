@@ -120,21 +120,21 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-vim.api.nvim_create_autocmd('VimEnter', {
-  callback = function()
-    local argv = vim.fn.argv()
-    if #argv ~= 1 then
-      return
-    end
-
-    local path = argv[1]
-    local dir = vim.fn.isdirectory(path) == 1 and path or vim.fn.fnamemodify(path, ':h')
-
-    if dir ~= '' then
-      vim.cmd.cd(vim.fn.fnameescape(dir))
-    end
-  end,
-})
+-- vim.api.nvim_create_autocmd('VimEnter', {
+--   callback = function()
+--     local argv = vim.fn.argv()
+--     if #argv ~= 1 then
+--       return
+--     end
+--
+--     local path = argv[1]
+--     local dir = vim.fn.isdirectory(path) == 1 and path or vim.fn.fnamemodify(path, ':h')
+--
+--     if dir ~= '' then
+--       vim.cmd.cd(vim.fn.fnameescape(dir))
+--     end
+--   end,
+-- })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -410,6 +410,29 @@ require('lazy').setup({
       'saghen/blink.cmp',
     },
     config = function()
+      vim.lsp.config('nixd', {
+        cmd = { 'nixd' },
+        settings = {
+          nixd = {
+            nixpkgs = {
+              expr = '(builtins.getFlake "/home/tom/.config/home-manager").homeConfigurations."tom".options',
+            },
+            formatting = {
+              command = { 'nixfmt' },
+            },
+            options = {
+              nixos = {
+                expr = '(builtins.getFlake ("git+file://" + toString ./.)).nixosConfigurations.tom.options',
+              },
+              home_manager = {
+                expr = '(builtins.getFlake ("git+file://" + toString ./.)).homeConfigurations."tom".options',
+              },
+            },
+          },
+        },
+      })
+      vim.lsp.enable 'nixd'
+
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -598,7 +621,6 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
 
-        nil_ls = {},
         ts_ls = {},
         lua_ls = {
           -- cmd = { ... },
@@ -614,6 +636,8 @@ require('lazy').setup({
             },
           },
         },
+        bashls = {},
+        pylsp = {},
       }
 
       -- Ensure the servers and tools above are installed
@@ -633,6 +657,7 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'nixfmt',
+        'shellharden',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -652,7 +677,6 @@ require('lazy').setup({
       }
     end,
   },
-
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -693,7 +717,6 @@ require('lazy').setup({
       },
     },
   },
-
   { -- Autocompletion
     'saghen/blink.cmp',
     event = 'VimEnter',
@@ -792,7 +815,6 @@ require('lazy').setup({
       signature = { enabled = true },
     },
   },
-
   { -- You can easily change to a different colorscheme.
     -- Change the name of the colorscheme plugin below, and then
     -- change the command in the config to whatever the name of that colorscheme is.
@@ -814,10 +836,8 @@ require('lazy').setup({
       vim.cmd.colorscheme 'tokyonight-night'
     end,
   },
-
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
-
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
     config = function()
@@ -848,7 +868,7 @@ require('lazy').setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
-        return '%2l:%-2v'
+        return '%2l:%-2v %p%%'
       end
 
       -- ... and there is more!
@@ -907,6 +927,25 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
+  {
+    'stevearc/oil.nvim',
+    --@module 'oil'
+    --@type oil.SetupOpts
+    opts = {
+      default_file_explorer = true,
+      columns = {
+        'icon',
+        'permissions',
+      },
+    },
+    dependencies = {
+      {
+        'nvim-mini/mini.icons',
+        opts = {},
+      },
+    },
+    lazy = false,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -927,6 +966,15 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+})
+
+-- vinegar style oil parent dir
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open Parent Directory' })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'man',
+  callback = function()
+    vim.opt_local.number = true
+  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
