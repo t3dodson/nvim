@@ -638,6 +638,7 @@ require('lazy').setup({
         },
         bashls = {},
         pylsp = {},
+        terraformls = {},
       }
 
       -- Ensure the servers and tools above are installed
